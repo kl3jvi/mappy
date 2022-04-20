@@ -4,12 +4,7 @@ import com.google.auto.service.AutoService
 import com.kl3jvi.annotations.DeepLink
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asTypeName
-
 import java.io.File
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
@@ -32,15 +27,21 @@ class AnnotationProcessor : AbstractProcessor() {
 
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latest()
 
-    override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment): Boolean {
+    override fun process(
+        annotations: MutableSet<out TypeElement>?,
+        roundEnv: RoundEnvironment
+    ): Boolean {
         roundEnv.getElementsAnnotatedWith(DeepLink::class.java)
-                .forEach {
-                    if (it.kind != ElementKind.CLASS) {
-                        processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "Only classes can be annotated")
-                        return true
-                    }
-                    processAnnotation(it)
+            .forEach {
+                if (it.kind != ElementKind.CLASS) {
+                    processingEnv.messager.printMessage(
+                        Diagnostic.Kind.ERROR,
+                        "Only classes can be annotated"
+                    )
+                    return true
                 }
+                processAnnotation(it)
+            }
         return false
     }
 
@@ -48,12 +49,16 @@ class AnnotationProcessor : AbstractProcessor() {
         val className = element.simpleName.toString()
         val pack = processingEnv.elementUtils.getPackageOf(element).toString()
 
-        val fileName = "Encapsulated$className"
-        val fileBuilder= FileSpec.builder(pack, fileName)
-        val classBuilder = TypeSpec.classBuilder(fileName)
+        val fileName = "DeepLink$className"
+        val fileBuilder = FileSpec.builder(pack, fileName)
+            .addFunction(
+                FunSpec.builder("$className.greet")
+                    .addParameter("name", String::class)
+                    .addStatement("println(name)")
+                    .build()
+            )
 
-
-        val file = fileBuilder.addType(classBuilder.build()).build()
+        val file = fileBuilder.build()
         val kaptKotlinGeneratedDir = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]
         file.writeTo(File(kaptKotlinGeneratedDir))
     }

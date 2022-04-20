@@ -1,9 +1,11 @@
-apply plugin: 'java-library'
-apply plugin: 'kotlin'
+plugins {
+    id 'java-library'
+    id 'kotlin'
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.20"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21"
 }
 
 java {

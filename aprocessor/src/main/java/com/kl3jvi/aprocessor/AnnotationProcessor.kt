@@ -1,4 +1,4 @@
-package com.tompee.aprocessor
+package com.kl3jvi.aprocessor
 
 import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.FileSpec
@@ -6,12 +6,10 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
-import com.tompee.annotations.Encapsulate
+import com.kl3jvi.annotations.Encapsulate
 import java.io.File
-import java.lang.reflect.Type
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
@@ -19,9 +17,7 @@ import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
-import javax.lang.model.util.ElementFilter
 import javax.tools.Diagnostic
-import kotlin.reflect.jvm.reflect
 
 @AutoService(Processor::class)
 class AnnotationProcessor : AbstractProcessor() {

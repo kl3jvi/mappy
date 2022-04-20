@@ -1,6 +1,6 @@
-package com.tompee.annotationprocessor
+package com.kl3jvi.annotationprocessor
 
-import com.tompee.annotations.Encapsulate
+import com.kl3jvi.annotations.Encapsulate
 
 @Encapsulate
 data class Model(val counter: Int,

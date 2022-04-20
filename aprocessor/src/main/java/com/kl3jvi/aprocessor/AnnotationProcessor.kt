@@ -1,6 +1,7 @@
 package com.kl3jvi.aprocessor
 
 import com.google.auto.service.AutoService
+import com.kl3jvi.annotations.DeepLink
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
@@ -8,7 +9,7 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
-import com.kl3jvi.annotations.Encapsulate
+
 import java.io.File
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
@@ -26,13 +27,13 @@ class AnnotationProcessor : AbstractProcessor() {
     }
 
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
-        return mutableSetOf(Encapsulate::class.java.name)
+        return mutableSetOf(DeepLink::class.java.name)
     }
 
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latest()
 
     override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment): Boolean {
-        roundEnv.getElementsAnnotatedWith(Encapsulate::class.java)
+        roundEnv.getElementsAnnotatedWith(DeepLink::class.java)
                 .forEach {
                     if (it.kind != ElementKind.CLASS) {
                         processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "Only classes can be annotated")
@@ -51,27 +52,7 @@ class AnnotationProcessor : AbstractProcessor() {
         val fileBuilder= FileSpec.builder(pack, fileName)
         val classBuilder = TypeSpec.classBuilder(fileName)
 
-        for (enclosed in element.enclosedElements) {
-            if (enclosed.kind == ElementKind.FIELD) {
-                classBuilder.addProperty(
-                        PropertySpec.varBuilder(enclosed.simpleName.toString(), enclosed.asType().asTypeName().asNullable(), KModifier.PRIVATE)
-                                .initializer("null")
-                                .build()
-                )
-                classBuilder.addFunction(
-                        FunSpec.builder("get${enclosed.simpleName}")
-                                .returns(enclosed.asType().asTypeName().asNullable())
-                                .addStatement("return ${enclosed.simpleName}")
-                                .build()
-                )
-                classBuilder.addFunction(
-                        FunSpec.builder("set${enclosed.simpleName}")
-                                .addParameter(ParameterSpec.builder("${enclosed.simpleName}", enclosed.asType().asTypeName().asNullable()).build())
-                                .addStatement("this.${enclosed.simpleName} = ${enclosed.simpleName}")
-                                .build()
-                )
-            }
-        }
+
         val file = fileBuilder.addType(classBuilder.build()).build()
         val kaptKotlinGeneratedDir = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]
         file.writeTo(File(kaptKotlinGeneratedDir))

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="1.8">
+      <module name="DeepLinkDispatch.annotations" target="1.8" />
+      <module name="DeepLinkDispatch.app" target="1.8" />
+      <module name="KotlinAnnotationProcessor1.annotations" target="1.8" />
+      <module name="KotlinAnnotationProcessor1.app" target="1.8" />
+      <module name="test.app" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

@@ -1,10 +1,10 @@
 package com.kl3jvi.aprocessor
 
 import com.google.auto.service.AutoService
-import com.kl3jvi.annotations.DeepLink
+import com.kl3jvi.annotations.MapToEntity
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.asTypeName
 import java.io.File
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
@@ -13,6 +13,8 @@ import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
+import javax.lang.model.type.MirroredTypeException
+import javax.lang.model.type.TypeMirror
 import javax.tools.Diagnostic
 
 @AutoService(Processor::class)
@@ -22,7 +24,7 @@ class AnnotationProcessor : AbstractProcessor() {
     }
 
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
-        return mutableSetOf(DeepLink::class.java.name)
+        return mutableSetOf(MapToEntity::class.java.name)
     }
 
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latest()
@@ -31,7 +33,7 @@ class AnnotationProcessor : AbstractProcessor() {
         annotations: MutableSet<out TypeElement>?,
         roundEnv: RoundEnvironment
     ): Boolean {
-        roundEnv.getElementsAnnotatedWith(DeepLink::class.java)
+        roundEnv.getElementsAnnotatedWith(MapToEntity::class.java)
             .forEach {
                 if (it.kind != ElementKind.CLASS) {
                     processingEnv.messager.printMessage(
@@ -49,12 +51,22 @@ class AnnotationProcessor : AbstractProcessor() {
         val className = element.simpleName.toString()
         val pack = processingEnv.elementUtils.getPackageOf(element).toString()
 
-        val fileName = "DeepLink$className"
+
+//        val variableAsElement = processingEnv.typeUtils.asElement(element.asType())
+//        val fieldsInArgument = ElementFilter.fieldsIn(variableAsElement.enclosedElements)
+
+        val targetClass = try {
+            element.getAnnotation(MapToEntity::class.java).targetClass as TypeMirror // won’t even reach as TypeMirror but just for type inference
+        } catch (e: MirroredTypeException) {
+            e.typeMirror
+        }.asTypeName()
+
+        val fileName = "${className}Mapper"
         val fileBuilder = FileSpec.builder(pack, fileName)
             .addFunction(
-                FunSpec.builder("$className.greet")
-                    .addParameter("name", String::class)
-                    .addStatement("println(name)")
+                FunSpec.builder("toEntity")
+                    .receiver(element.asType().asTypeName())
+                    .returns(targetClass)
                     .build()
             )
 

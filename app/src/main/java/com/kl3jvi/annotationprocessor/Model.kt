@@ -1,7 +1,15 @@
 package com.kl3jvi.annotationprocessor
 
+import com.kl3jvi.annotations.MapToEntity
 
-data class Model(
-    val counter: Int,
-    val post: String
+
+@MapToEntity(targetClass = TestEntity::class)
+data class Test(
+    val naruto: String
 )
+
+data class TestEntity(
+    val naruto: String
+)
+
+

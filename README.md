@@ -12,6 +12,8 @@ You can massively reduce writing repeated files such as `_Mapper` classes.
 <img src="https://raw.githubusercontent.com/kl3jvi/mappy/ba49ac2e1b34d09b03afec6f1760320c55a823b7/assets/usage.svg" width="760"/>
 </p>
 
+> **Note-Usage**: The names of field to be excluded should be exactly the same as their defined name on data class.
+
 ## Gradle Setup
 
 To use Mappy library in your project, you need to follow steps below.

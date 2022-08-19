@@ -11,9 +11,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/annotations" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/aprocessor" />
+            <option value="$PROJECT_DIR$/mappy-core" />
+            <option value="$PROJECT_DIR$/mappy-processor" />
           </set>
         </option>
       </GradleProjectSettings>

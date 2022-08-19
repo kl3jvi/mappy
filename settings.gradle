@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Code Generator"
-include ':app', ':aprocessor', ':annotations'
+include ':app', ':mappy-processor', ':mappy-core'

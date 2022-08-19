@@ -7,8 +7,8 @@ targetCompatibility = 1.8
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':annotations')
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.20"
+    implementation project(':mappy-core')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.21"
     implementation 'com.squareup:kotlinpoet:0.7.0'
     kapt("com.google.auto.service:auto-service:1.0-rc6")
     implementation 'com.google.auto.service:auto-service:1.0-rc6'

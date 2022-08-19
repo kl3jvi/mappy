@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="2251" height="432" viewBox="0 0 2251 432">
+  <defs>
+    <clipPath id="clip-Custom_Size_3">
+      <rect width="2251" height="432"/>
+    </clipPath>
+  </defs>
+  <g id="Custom_Size_3" data-name="Custom Size – 3" clip-path="url(#clip-Custom_Size_3)">
+    <rect id="Rectangle_1" data-name="Rectangle 1" width="2251" height="432" rx="65" fill="#264e55"/>
+    <path id="Path_1" data-name="Path 1" d="M267.137,432S241.175,141.827,477.365,5.463" fill="none" stroke="#707070" stroke-width="2"/>
+    <path id="Path_2" data-name="Path 2" d="M267.556,697.092S228.687,226.577,582.3,5.463" transform="translate(298.01 -124.295) rotate(7)" fill="none" stroke="#707070" stroke-width="2"/>
+    <path id="Path_3" data-name="Path 3" d="M267.263,495.977S237.407,162.281,509.024,5.463" transform="translate(2081.175 536.083) rotate(-169)" fill="none" stroke="#707070" stroke-width="2"/>
+    <path id="Path_4" data-name="Path 4" d="M267.263,495.977S237.407,162.281,509.024,5.463" transform="translate(2321.175 536.082) rotate(-169)" fill="none" stroke="#707070" stroke-width="2"/>
+    <g id="Ellipse_1" data-name="Ellipse 1" transform="translate(1163 -166)" fill="none" stroke="#707070" stroke-width="2">
+      <circle cx="146" cy="146" r="146" stroke="none"/>
+      <circle cx="146" cy="146" r="145" fill="none"/>
+    </g>
+    <g id="Ellipse_2" data-name="Ellipse 2" transform="translate(739 303)" fill="none" stroke="#707070" stroke-width="2">
+      <circle cx="193.5" cy="193.5" r="193.5" stroke="none"/>
+      <circle cx="193.5" cy="193.5" r="192.5" fill="none"/>
+    </g>
+    <text id="MAPPY" transform="translate(527 250.906)" fill="#fff" font-size="120" font-family="Impact" letter-spacing="0.03em"><tspan x="0" y="0">MAPPY</tspan></text>
+    <text id="model_mapper_generator" data-name="model mapper generator" transform="translate(527 293.094)" fill="#fff" font-size="40" font-family="Helvetica" letter-spacing="0.03em"><tspan x="0" y="0">model mapper generator</tspan></text>
+    <g id="Group_6" data-name="Group 6" transform="translate(-2260 -393)">
+      <g id="Rectangle_3" data-name="Rectangle 3" transform="translate(2397 480)" fill="#077063" stroke="#264e55" stroke-width="1">
+        <rect width="258" height="258" rx="91" stroke="none"/>
+        <rect x="0.5" y="0.5" width="257" height="257" rx="90.5" fill="none"/>
+      </g>
+      <path id="iconmonstr-arrow-57" d="M117.578,110.1v35.7l58.789-71.71L117.578,3V38.7S20.01,57.833,0,163.645C42.593,108.258,117.578,110.1,117.578,110.1Z" transform="translate(2437.816 525.678)" fill="#30dd81"/>
+    </g>
+    <text id="_-_No_Code_Required_-_Auto_Generate_-_LightWeight_Library" data-name="- No Code Required
+- Auto Generate 
+- LightWeight Library" transform="translate(1540 179)" fill="#fff" font-size="43" font-family="ProductSans-Regular, Product Sans" letter-spacing="0.03em"><tspan x="0" y="0">- No Code Required</tspan><tspan x="0" y="52">- Auto Generate </tspan><tspan x="0" y="104">- LightWeight Library</tspan></text>
+  </g>
+</svg>

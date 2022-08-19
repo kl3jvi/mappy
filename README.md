@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/kl3jvi/mappy/764dd6626852d563e21472f4cef30c640a188ff1/assets/mappy.svg">
 <p align="center">
-🧭 Mappy is a Kotlin Symbol Processor to auto-generate mapper functions for your architecture layer models. It creates mappers for database Entities and UI models.
+🧭 Mappy is a Annotation Processor to auto-generate mapper functions for your architecture layer models. It creates mappers for database Entities and UI models.
 </p>
 
 ## Why Mappy?

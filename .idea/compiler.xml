@@ -3,6 +3,9 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="1.8">
       <module name="Code_Generator.app" target="11" />
+      <module name="Code_Generator.buildSrc" target="11" />
+      <module name="Code_Generator.buildSrc.main" target="11" />
+      <module name="Code_Generator.buildSrc.test" target="11" />
       <module name="DeepLinkDispatch.annotations" target="1.8" />
       <module name="DeepLinkDispatch.app" target="1.8" />
       <module name="KotlinAnnotationProcessor1.annotations" target="1.8" />

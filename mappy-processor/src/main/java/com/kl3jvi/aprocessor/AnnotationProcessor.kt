@@ -149,7 +149,6 @@ private fun FunSpec.Builder.addReturnFields(
     filterList: Array<String>
 ) = apply {
     addCode("return $targetClass(")
-
     val listOfEnclosed = element.enclosedElements.filter {
         filterList.toList().contains(it.simpleName.toString()).not()
     }.takeWhile {

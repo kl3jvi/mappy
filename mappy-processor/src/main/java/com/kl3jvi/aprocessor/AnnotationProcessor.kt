@@ -25,12 +25,31 @@ class AnnotationProcessor : AbstractProcessor() {
         const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
     }
 
+    /**
+     * It returns a set of annotation types that the processor supports.
+     *
+     * @return A set of strings that represent the annotations that this processor will process.
+     */
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
-        return mutableSetOf(MapToEntity::class.java.name)
+        return mutableSetOf(
+            MapToUi::class.java.name,
+            MapToEntity::class.java.name
+        )
     }
 
+    /**
+     * This annotation processor supports the latest version of the Java language.
+     */
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latest()
 
+    /**
+     * For each element annotated with `@MapToUi` or `@MapToEntity`, if the element is a class, process the annotation
+     *
+     * @param annotations This is the set of annotations that the processor supports. In our case, we only support the
+     * MapToUi and MapToEntity annotations.
+     * @param roundEnv This is the environment for the current round of annotation processing.
+     * @return Boolean
+     */
     override fun process(
         annotations: MutableSet<out TypeElement>?,
         roundEnv: RoundEnvironment
@@ -153,7 +172,7 @@ private fun FunSpec.Builder.addReturnFields(
         filterList.toList().contains(it.simpleName.toString()).not()
     }.takeWhile {
         it.kind == ElementKind.FIELD
-    }.joinToString { it.simpleName }
+    }.joinToString { "${it.simpleName}=${it.simpleName}" }
     addCode(listOfEnclosed)
     addCode(")")
 }

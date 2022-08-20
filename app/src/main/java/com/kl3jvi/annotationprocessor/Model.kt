@@ -15,7 +15,7 @@ data class TestEntity(
 
 @MapToEntity(
     targetClass = RestaurantEntity::class,
-    excludeFields = ["name"]
+    excludeFields = ["price"]
 )
 @MapToUi(targetClass = Restaurant::class)
 data class NetworkRestaurant(

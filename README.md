@@ -47,6 +47,6 @@ allprojects {
 
 Step 2. Add the dependency
 ```kotlin
-  implementation("com.github.kl3jvi.mappy:annotations:1.0.0")
-  kapt("com.github.kl3jvi.mappy:aprocessor:1.0.0")
+  implementation("com.github.kl3jvi.mappy:mappy-core:1.0.1")
+  kapt("com.github.kl3jvi.mappy:mappy-processor:1.0.1")
 ```

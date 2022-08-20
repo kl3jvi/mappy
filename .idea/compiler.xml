@@ -10,6 +10,10 @@
       <module name="DeepLinkDispatch.app" target="1.8" />
       <module name="KotlinAnnotationProcessor1.annotations" target="1.8" />
       <module name="KotlinAnnotationProcessor1.app" target="1.8" />
+      <module name="mappy.app" target="11" />
+      <module name="mappy.buildSrc" target="11" />
+      <module name="mappy.buildSrc.main" target="11" />
+      <module name="mappy.buildSrc.test" target="11" />
       <module name="test.app" target="11" />
     </bytecodeTargetLevel>
   </component>

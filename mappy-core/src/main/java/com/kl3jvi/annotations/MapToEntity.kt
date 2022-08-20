@@ -11,13 +11,5 @@ annotation class MapToEntity(
     val editableFields: Array<String> = []
 )
 
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.SOURCE)
-annotation class MapToUi(
-    val targetClass: KClass<*>,
-    val excludeFields: Array<String> = [],
-    val editableFields: Array<String> = []
-)
-
 
 

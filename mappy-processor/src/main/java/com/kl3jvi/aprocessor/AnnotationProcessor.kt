@@ -3,10 +3,7 @@ package com.kl3jvi.aprocessor
 import com.google.auto.service.AutoService
 import com.kl3jvi.annotations.MapToEntity
 import com.kl3jvi.annotations.MapToUi
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.TypeName
-import com.squareup.kotlinpoet.asTypeName
+import com.squareup.kotlinpoet.*
 import java.io.File
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
@@ -25,38 +22,52 @@ class AnnotationProcessor : AbstractProcessor() {
         const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
     }
 
+    /**
+     * It returns a set of annotation types that the processor supports.
+     *
+     * @return A set of strings that represent the annotations that this processor will process.
+     */
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
-        return mutableSetOf(MapToEntity::class.java.name)
+        return mutableSetOf(
+            MapToUi::class.java.name, MapToEntity::class.java.name
+        )
     }
 
+    /**
+     * This annotation processor supports the latest version of the Java language.
+     */
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latest()
 
+    /**
+     * For each element annotated with `@MapToUi` or `@MapToEntity`, if the element is a class, process the annotation
+     *
+     * @param annotations This is the set of annotations that the processor supports. In our case, we only support the
+     * MapToUi and MapToEntity annotations.
+     * @param roundEnv This is the environment for the current round of annotation processing.
+     * @return Boolean
+     */
     override fun process(
-        annotations: MutableSet<out TypeElement>?,
-        roundEnv: RoundEnvironment
+        annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment
     ): Boolean {
         roundEnv.apply {
             getElementsAnnotatedWith(MapToUi::class.java).forEach {
                 if (it.kind != ElementKind.CLASS) {
                     processingEnv.messager.printMessage(
-                        Diagnostic.Kind.ERROR,
-                        "Only classes can be annotated"
+                        Diagnostic.Kind.ERROR, "Only classes can be annotated"
                     )
                     return true
                 }
                 processUiAnnotation(it)
             }
-            getElementsAnnotatedWith(MapToEntity::class.java)
-                .forEach {
-                    if (it.kind != ElementKind.CLASS) {
-                        processingEnv.messager.printMessage(
-                            Diagnostic.Kind.ERROR,
-                            "Only classes can be annotated"
-                        )
-                        return true
-                    }
-                    processEntityAnnotation(it)
+            getElementsAnnotatedWith(MapToEntity::class.java).forEach {
+                if (it.kind != ElementKind.CLASS) {
+                    processingEnv.messager.printMessage(
+                        Diagnostic.Kind.ERROR, "Only classes can be annotated"
+                    )
+                    return true
                 }
+                processEntityAnnotation(it)
+            }
         }
         return false
     }
@@ -79,7 +90,19 @@ class AnnotationProcessor : AbstractProcessor() {
         }.asTypeName()
 
         val filterList = element.getAnnotation(MapToUi::class.java).excludeFields
+        val editableFields = element.getAnnotation(MapToUi::class.java).editableFields
 
+        /* It's creating a list of parameters for the function. */
+        val parameterIterable = editableFields.map {
+            val parameter = ParameterSpec.builder("new_$it", getFieldClassType(it, element)).build()
+            parameter
+        }.asIterable()
+
+        filterList.forEach {
+            if (editableFields.contains(it)) processingEnv.messager.printMessage(
+                Diagnostic.Kind.ERROR, "Mappy Error: Editable Field can not be set as an exclusive field!"
+            )
+        }
 
         /* It's adding a function to the fileBuilder. The function is called toEntity, it takes the element as a receiver,
         and returns the targetClass. It then calls addReturnFields, which adds the code to return a new instance of the
@@ -87,8 +110,9 @@ class AnnotationProcessor : AbstractProcessor() {
         fileBuilder.addFunction(
             FunSpec.builder("toUiModel")
                 .receiver(element.asType().asTypeName())
+                .addParameters(parameterIterable)
                 .returns(targetClass)
-                .addReturnFields(targetClass, element, filterList)
+                .addReturnFields(targetClass, element, filterList, emptyArray())
                 .build()
         )
 
@@ -116,7 +140,18 @@ class AnnotationProcessor : AbstractProcessor() {
         }.asTypeName()
 
         val filterList = element.getAnnotation(MapToEntity::class.java).excludeFields
+        val editableFields = element.getAnnotation(MapToEntity::class.java).editableFields
 
+        val parameterIterable = editableFields.map {
+            val parameter = ParameterSpec.builder("new_$it", getFieldClassType(it, element)).build()
+            parameter
+        }.asIterable()
+
+        filterList.forEach {
+            if (editableFields.contains(it)) processingEnv.messager.printMessage(
+                Diagnostic.Kind.ERROR, "Mappy Error: Editable Field can not be set as an exclusive field!"
+            )
+        }
 
         /* It's adding a function to the fileBuilder. The function is called toEntity, it takes the element as a receiver,
         and returns the targetClass. It then calls addReturnFields, which adds the code to return a new instance of the
@@ -124,8 +159,9 @@ class AnnotationProcessor : AbstractProcessor() {
         fileBuilder.addFunction(
             FunSpec.builder("toEntity")
                 .receiver(element.asType().asTypeName())
+                .addParameters(parameterIterable)
                 .returns(targetClass)
-                .addReturnFields(targetClass, element, filterList)
+                .addReturnFields(targetClass, element, filterList, editableFields)
                 .build()
         )
 
@@ -144,16 +180,26 @@ class AnnotationProcessor : AbstractProcessor() {
  * @param filterList Array<String>
  */
 private fun FunSpec.Builder.addReturnFields(
-    targetClass: TypeName,
-    element: Element,
-    filterList: Array<String>
+    targetClass: TypeName, element: Element, filterList: Array<String>, editableFields: Array<String>
 ) = apply {
-    addCode("return $targetClass(")
+    addCode("return %T(", targetClass)
     val listOfEnclosed = element.enclosedElements.filter {
         filterList.toList().contains(it.simpleName.toString()).not()
     }.takeWhile {
         it.kind == ElementKind.FIELD
-    }.joinToString { it.simpleName }
+    }.joinToString {
+        "${it.simpleName} = ${
+            if (editableFields.contains(it.simpleName.toString()).not())
+                it.simpleName
+            else
+                "new_${it.simpleName}"
+        }"
+    }
     addCode(listOfEnclosed)
     addCode(")")
+}
+
+fun getFieldClassType(fieldName: String, element: Element): TypeName {
+    return element.enclosedElements.takeWhile { it.kind == ElementKind.FIELD }
+        .find { it.simpleName.toString() == fieldName }?.asType()?.asTypeName() ?: typeNameOf<String>()
 }

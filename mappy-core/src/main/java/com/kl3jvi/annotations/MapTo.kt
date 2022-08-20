@@ -7,14 +7,16 @@ import kotlin.reflect.KClass
 @Retention(AnnotationRetention.SOURCE)
 annotation class MapToEntity(
     val targetClass: KClass<*>,
-    val excludeFields: Array<String> = []
+    val excludeFields: Array<String> = [],
+    val editableFields: Array<String> = []
 )
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)
 annotation class MapToUi(
     val targetClass: KClass<*>,
-    val excludeFields: Array<String> = []
+    val excludeFields: Array<String> = [],
+    val editableFields: Array<String> = []
 )
 
 

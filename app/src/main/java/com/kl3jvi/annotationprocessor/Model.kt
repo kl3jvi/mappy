@@ -15,19 +15,19 @@ data class TestEntity(
 
 @MapToEntity(
     targetClass = RestaurantEntity::class,
-    excludeFields = ["name"]
+    excludeFields = ["price"]
 )
 @MapToUi(targetClass = Restaurant::class)
 data class NetworkRestaurant(
-    val name: String, val size: String, val price: String
+    val name: String, val size: Int, val price: String
 )
 
 data class RestaurantEntity(
-    val name: String, val size: String, val price: String? = null
+    val name: String, val size: Int, val price: String? = null
 )
 
 data class Restaurant(
-    val name: String, val size: String, val price: String? = null
+    val name: String, val size: Int, val price: String? = null
 )
 
 

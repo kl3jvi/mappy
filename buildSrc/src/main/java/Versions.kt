@@ -1,5 +1,5 @@
 object Versions {
-    val versionName = "1.0.1" // X.Y.Z; X = Major, Y = minor, Z = Patch level
+    val versionName = "1.0.1"
     val versionCode = 1
     const val APPLICATION_ID = "com.kl3jvi.annotationprocessor"
 

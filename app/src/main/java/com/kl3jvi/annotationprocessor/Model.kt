@@ -16,7 +16,7 @@ data class TestEntity(
 @MapToEntity(
     targetClass = RestaurantEntity::class,
     excludeFields = ["price"],
-    editableFields = ["size"]
+    editableFields = ["price"]
 )
 @MapToUi(targetClass = Restaurant::class)
 data class NetworkRestaurant(

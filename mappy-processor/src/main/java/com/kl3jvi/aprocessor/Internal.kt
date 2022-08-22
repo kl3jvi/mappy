@@ -2,10 +2,7 @@ package com.kl3jvi.aprocessor
 
 import com.kl3jvi.annotations.MapToEntity
 import com.kl3jvi.annotations.MapToUi
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.TypeName
-import com.squareup.kotlinpoet.asTypeName
-import com.squareup.kotlinpoet.typeNameOf
+import com.squareup.kotlinpoet.*
 import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.Element
@@ -33,10 +30,8 @@ fun FunSpec.Builder.addReturnFields(
         it.kind == ElementKind.FIELD
     }.joinToString {
         "${it.simpleName} = ${
-            if (editableFields.contains(it.simpleName.toString()).not())
-                it.simpleName
-            else
-                "new_${it.simpleName}"
+            if (editableFields.contains(it.simpleName.toString()).not()) it.simpleName
+            else "new_${it.simpleName}"
         }"
     }
     addCode(listOfEnclosed)
@@ -52,21 +47,19 @@ fun FunSpec.Builder.addReturnFields(
  */
 fun getFieldClassType(fieldName: String, element: Element): TypeName {
     return element.enclosedElements.takeWhile { it.kind == ElementKind.FIELD }
-        .find { it.simpleName.toString() == fieldName }
-        ?.asType()?.asTypeName() ?: typeNameOf<Unit>()
+        .find { it.simpleName.toString() == fieldName }?.asType()?.asTypeName() ?: typeNameOf<Unit>()
 }
 
 inline fun <reified T : Annotation> RoundEnvironment.processForAnnotation(
     processingEnvironment: ProcessingEnvironment,
-    a: Class<T>,
-    processAnnotation: (element: Element) -> Unit
+    retrieveElement: (element: Element) -> Unit
 ): Boolean {
-    getElementsAnnotatedWith(a).forEach {
+    getElementsAnnotatedWith(T::class.java).forEach {
         if (it.kind != ElementKind.CLASS) {
             processingEnvironment.error("Only classes can be annotated")
             return true
         }
-        processAnnotation(it)
+        retrieveElement(it)
     }
     return false
 }
@@ -83,10 +76,17 @@ fun Element.getAnnotationFieldsForUi(clazz: Class<MapToUi>): AnnotationParams {
     } catch (e: MirroredTypeException) {
         e.typeMirror
     }.asTypeName()
+
     val excludeFields = getAnnotation(clazz).excludeFields
     val editableFields = getAnnotation(clazz).editableFields
 
-    return AnnotationParams(name, excludeFields, editableFields)
+    val parameterIterable = editableFields.map {
+        val parameter = ParameterSpec.builder("new_$it", getFieldClassType(it, this)).build()
+        parameter
+    }.asIterable()
+
+
+    return AnnotationParams(name, excludeFields, editableFields, parameterIterable)
 }
 
 fun Element.getAnnotationFieldsForEntity(clazz: Class<MapToEntity>): AnnotationParams {
@@ -99,11 +99,14 @@ fun Element.getAnnotationFieldsForEntity(clazz: Class<MapToEntity>): AnnotationP
     val excludeFields = getAnnotation(clazz).excludeFields
     val editableFields = getAnnotation(clazz).editableFields
 
-    return AnnotationParams(name, excludeFields, editableFields)
+    val parameterIterable = editableFields.map {
+        val parameter = ParameterSpec.builder("new_$it", getFieldClassType(it, this)).build()
+        parameter
+    }.asIterable()
+
+    return AnnotationParams(name, excludeFields, editableFields, parameterIterable)
 }
 
-data class AnnotationParams(
-    val name: TypeName,
-    val excludeFields: Array<String>,
-    val editableFields: Array<String>
-)
+
+
+

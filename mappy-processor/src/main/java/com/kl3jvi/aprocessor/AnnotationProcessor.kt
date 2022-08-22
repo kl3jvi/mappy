@@ -5,16 +5,13 @@ import com.kl3jvi.annotations.MapToEntity
 import com.kl3jvi.annotations.MapToUi
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.asTypeName
-import java.io.File
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
-import javax.tools.Diagnostic
 
 @AutoService(Processor::class)
 class AnnotationProcessor : AbstractProcessor() {
@@ -31,82 +28,68 @@ class AnnotationProcessor : AbstractProcessor() {
         annotations: Set<TypeElement>, roundEnv: RoundEnvironment
     ): Boolean {
         roundEnv.apply {
-            return processForAnnotation(processingEnv, MapToUi::class.java) {
-                processUiAnnotation(it)
-            } || processForAnnotation(processingEnv, MapToEntity::class.java) {
-                processEntityAnnotation(it)
+            return processForAnnotation<MapToUi>(processingEnvironment = processingEnv) { element ->
+                element.processUiAnnotation()
+            } || processForAnnotation<MapToEntity>(processingEnvironment = processingEnv) { element ->
+                element.processEntityAnnotation()
             }
         }
-
     }
 
-
-    private fun processUiAnnotation(element: Element) {
-        val className = element.simpleName.toString()
-        val pack = processingEnv.elementUtils.getPackageOf(element).toString()
+    private fun Element.processUiAnnotation() {
+        val className = simpleName.toString()
+        val pack = processingEnv.elementUtils.getPackageOf(this).toString()
 
         val fileName = "${className}UiMapper"
         val fileBuilder = FileSpec.builder(pack, fileName)
 
-        val (targetClass, filterList, editableFields) =
-            element.getAnnotationFieldsForUi(MapToUi::class.java)
+        val (
+            targetClass,
+            filterList,
+            editableFields,
+            parameterIterable
+        ) = getAnnotationFieldsForUi(MapToUi::class.java)
 
-        val parameterIterable = editableFields.map {
-            val parameter = ParameterSpec.builder("new_$it", getFieldClassType(it, element)).build()
-            parameter
-        }.asIterable()
 
         filterList.forEach {
-            if (editableFields.contains(it)) processingEnv.messager.printMessage(
-                Diagnostic.Kind.ERROR, "Mappy Error: Editable Field can not be set as an exclusive field!"
-            )
+            if (editableFields.contains(it)) processingEnv.error("Mappy Error: Editable Field can not be set as an exclusive field!")
         }
 
         /* It's adding a function to the fileBuilder. The function is called toEntity, it takes the element as a receiver,
         and returns the targetClass. It then calls addReturnFields, which adds the code to return a new instance of the
         target class with all the fields except the ones in the filter list. */
         fileBuilder.addFunction(
-            FunSpec.builder("toUiModel").receiver(element.asType().asTypeName()).addParameters(parameterIterable)
-                .returns(targetClass).addReturnFields(targetClass, element, filterList, emptyArray()).build()
+            FunSpec.builder("toUiModel").receiver(this.asType().asTypeName()).addParameters(parameterIterable)
+                .returns(targetClass).addReturnFields(targetClass, this, filterList, emptyArray()).build()
         )
 
-        val file = fileBuilder.build()
-        val kaptKotlinGeneratedDir = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]
-        file.writeTo(File(kaptKotlinGeneratedDir.toString()))
-
+        fileBuilder.build().writeToFile(processingEnv)
     }
 
 
-    private fun processEntityAnnotation(element: Element) {
-        val className = element.simpleName.toString()
-        val pack = processingEnv.elementUtils.getPackageOf(element).toString()
+    private fun Element.processEntityAnnotation() {
+        val className = simpleName.toString()
+        val pack = processingEnv.elementUtils.getPackageOf(this).toString()
 
         val fileName = "${className}EntityMapper"
         val fileBuilder = FileSpec.builder(pack, fileName)
-//        val classBuilder = TypeSpec.classBuilder(fileName)
-
 
         /* It's getting the target class from the annotation. */
-        val (targetClass, filterList, editableFields) = element.getAnnotationFieldsForEntity(MapToEntity::class.java)
+        val (
+            targetClass,
+            filterList,
+            editableFields,
+            parameterIterable
+        ) = getAnnotationFieldsForEntity(MapToEntity::class.java)
 
-
-        val parameterIterable = editableFields.map {
-            val parameter = ParameterSpec.builder("new_$it", getFieldClassType(it, element)).build()
-            parameter
-        }.asIterable()
 
         filterList.forEach {
-            if (editableFields.contains(it))
-                processingEnv.error("Mappy Error: Editable Field can not be set as an exclusive field!")
+            if (editableFields.contains(it)) processingEnv.error("Mappy Error: Editable Field can not be set as an exclusive field!")
         }
 
         fileBuilder.addFunction(
-            FunSpec.builder("toEntity")
-                .receiver(element.asType().asTypeName())
-                .addParameters(parameterIterable)
-                .returns(targetClass)
-                .addReturnFields(targetClass, element, filterList, editableFields)
-                .build()
+            FunSpec.builder("toEntity").receiver(this.asType().asTypeName()).addParameters(parameterIterable)
+                .returns(targetClass).addReturnFields(targetClass, this, filterList, editableFields).build()
         )
         fileBuilder.build().writeToFile(processingEnv)
     }

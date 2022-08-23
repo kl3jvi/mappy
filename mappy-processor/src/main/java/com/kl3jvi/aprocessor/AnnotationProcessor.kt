@@ -40,7 +40,7 @@ class AnnotationProcessor : AbstractProcessor() {
         return roundEnv.processForAnnotation<MapToDomain, MapToEntity> { element, annotation ->
             when (annotation) {
                 MapToEntity::class.java -> element.processEntityAnnotation()
-                MapToDomain::class.java -> element.processUiAnnotation()
+                MapToDomain::class.java -> element.processDomainAnnotation()
             }
         }
     }
@@ -49,7 +49,7 @@ class AnnotationProcessor : AbstractProcessor() {
      * It takes the annotation fields and generates a function that returns a new instance of the target class with the
      * fields that are not in the filter list set to the values of the fields in the annotated class
      */
-    private fun Element.processUiAnnotation() {
+    private fun Element.processDomainAnnotation() {
         val className = simpleName.toString()
         val pack = processingEnv.elementUtils.getPackageOf(this).toString()
 
@@ -84,7 +84,8 @@ class AnnotationProcessor : AbstractProcessor() {
         /* It's getting the target class from the annotation. */
         val (targetClass, filterList, editableFields, parameterIterable) = getAnnotationFieldsForEntity(MapToEntity::class.java)
 
-        if (filterList.any { editableFields.contains(it) }) compilerError("Mappy Error: Editable Field can not be set as an exclusive field!")
+        if (filterList.any { editableFields.contains(it) })
+            compilerError("Mappy Error: Editable Field can not be set as an exclusive field!")
 
 
         fileBuilder.addFunction(

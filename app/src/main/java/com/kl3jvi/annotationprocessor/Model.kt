@@ -1,7 +1,7 @@
 package com.kl3jvi.annotationprocessor
 
+import com.kl3jvi.annotations.MapToDomain
 import com.kl3jvi.annotations.MapToEntity
-import com.kl3jvi.annotations.MapToUi
 
 
 @MapToEntity(targetClass = TestEntity::class)
@@ -15,10 +15,8 @@ data class TestEntity(
 
 @MapToEntity(
     targetClass = RestaurantEntity::class,
-    excludeFields = ["price"],
-    editableFields = ["price"]
 )
-@MapToUi(targetClass = Restaurant::class)
+@MapToDomain(targetClass = Restaurant::class)
 data class NetworkRestaurant(
     val name: String, val size: Int, val price: String
 )

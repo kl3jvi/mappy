@@ -10,6 +10,8 @@ object Versions {
     const val KOTLIN_POET = "1.12.0"
     const val AUTO_SERVICE = "1.0.1"
 
+    const val KOTLIN_METADATA = "0.2.0"
+
     const val CORE = "1.8.0"
     const val MATERIAL = "1.6.1"
 }

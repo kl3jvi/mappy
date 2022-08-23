@@ -13,5 +13,6 @@ dependencies {
     implementation(project(Modules.CORE))
     implementation(Libs.KOTLIN_POET)
     implementation(Libs.AUTO_SERVICE_GOOGLE)
+    implementation(Libs.METADATA_KOTLIN)
     kapt(Libs.AUTO_SERVICE_GOOGLE)
 }

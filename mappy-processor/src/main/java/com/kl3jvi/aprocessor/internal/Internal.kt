@@ -1,15 +1,14 @@
-package com.kl3jvi.aprocessor
+package com.kl3jvi.aprocessor.internal
 
+import com.kl3jvi.annotations.MapToDomain
 import com.kl3jvi.annotations.MapToEntity
-import com.kl3jvi.annotations.MapToUi
+import com.kl3jvi.aprocessor.logger.compilerError
 import com.squareup.kotlinpoet.*
-import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.type.MirroredTypeException
 import javax.lang.model.type.TypeMirror
-import javax.tools.Diagnostic
 
 /**
  * It takes a target class, an element, and a list of fields to filter out, and returns a FunSpec.Builder with the code to
@@ -50,27 +49,30 @@ fun getFieldClassType(fieldName: String, element: Element): TypeName {
         .find { it.simpleName.toString() == fieldName }?.asType()?.asTypeName() ?: typeNameOf<Unit>()
 }
 
-inline fun <reified T : Annotation> RoundEnvironment.processForAnnotation(
-    processingEnvironment: ProcessingEnvironment,
-    retrieveElement: (element: Element) -> Unit
+inline fun <reified DOMAIN : Annotation, reified ENTITY : Annotation> RoundEnvironment.processForAnnotation(
+    retrieveElement: (element: Element, clazz: Class<out Annotation>) -> Unit
 ): Boolean {
-    getElementsAnnotatedWith(T::class.java).forEach {
-        if (it.kind != ElementKind.CLASS) {
-            processingEnvironment.error("Only classes can be annotated")
-            return true
-        }
-        retrieveElement(it)
+
+    val list = buildList {
+        add(getElementsAnnotatedWith(DOMAIN::class.java) to DOMAIN::class.java)
+        add(getElementsAnnotatedWith(ENTITY::class.java) to ENTITY::class.java)
     }
+
+    list.forEach { pair ->
+        val setOfElements = pair.first
+        setOfElements.forEach { element ->
+            if (element.kind != ElementKind.CLASS) {
+                compilerError("Only classes can be annotated")
+                return true
+            }
+            retrieveElement(element, pair.second)
+        }
+    }
+
     return false
 }
 
-fun ProcessingEnvironment.error(msg: String) {
-    messager.printMessage(
-        Diagnostic.Kind.ERROR, msg
-    )
-}
-
-fun Element.getAnnotationFieldsForUi(clazz: Class<MapToUi>): AnnotationParams {
+fun Element.getAnnotationFieldsForUi(clazz: Class<MapToDomain>): AnnotationParams {
     val name = try {
         getAnnotation(clazz).targetClass as TypeMirror
     } catch (e: MirroredTypeException) {
@@ -105,6 +107,21 @@ fun Element.getAnnotationFieldsForEntity(clazz: Class<MapToEntity>): AnnotationP
     }.asIterable()
 
     return AnnotationParams(name, excludeFields, editableFields, parameterIterable)
+}
+
+
+fun List<Element>.getTypeFromIndex(element: Element): Type {
+    return when (this) {
+        first() -> Type.Domain(MapToDomain::class.java, element)
+
+        last() -> Type.Entity(MapToEntity::class.java, element)
+
+        else -> {
+            compilerError(this.toString())
+            compilerError("Annotation Not Found")
+            error("$this Annotation Not Found")
+        }
+    }
 }
 
 

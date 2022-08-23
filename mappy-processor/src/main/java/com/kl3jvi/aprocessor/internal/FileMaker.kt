@@ -1,5 +1,6 @@
-package com.kl3jvi.aprocessor
+package com.kl3jvi.aprocessor.internal
 
+import com.kl3jvi.aprocessor.AnnotationProcessor
 import com.squareup.kotlinpoet.FileSpec
 import java.io.File
 import javax.annotation.processing.ProcessingEnvironment

@@ -25,12 +25,11 @@ object Logger {
 }
 
 internal class LoggerImpl internal constructor(
-    private val pe: ProcessingEnvironment,
+    pe: ProcessingEnvironment,
     private val messagePrefix: String
 ) {
 
     private val messager: Messager = pe.messager
-
 
     fun log(message: String) {
         val prefixedMessage = message.addPrefix()
@@ -64,4 +63,3 @@ fun compilerWarning(message: String) {
     checkNotNull(Logger.retainedInstance) { "No retained instance" }
     Logger.retainedInstance!!.warning(message)
 }
-

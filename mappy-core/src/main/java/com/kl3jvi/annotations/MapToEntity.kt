@@ -10,6 +10,3 @@ annotation class MapToEntity(
     val excludeFields: Array<String> = [],
     val editableFields: Array<String> = []
 )
-
-
-

@@ -18,18 +18,14 @@ android {
         viewBinding = true
     }
 
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-
     sourceSets["main"].java {
         srcDir("${buildDir.absolutePath}/generated/source/kaptKotlin/")
     }
-
-
 }
 
 dependencies {

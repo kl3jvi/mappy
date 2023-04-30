@@ -23,5 +23,4 @@ class MapperCandidate private constructor(val originatingElement: TypeElement) {
 
     /* It's extracting Kotlin metadata from the originating element. */
     private val metadata: KotlinClassMetadata = extractKotlinMetadata(originatingElement)!!
-
 }

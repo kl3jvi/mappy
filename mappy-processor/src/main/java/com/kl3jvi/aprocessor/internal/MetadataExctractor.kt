@@ -30,7 +30,6 @@ fun extractKotlinMetadata(element: Element): KotlinClassMetadata? {
     }
 }
 
-
 /* Checking if the class is a data class. */
 fun KotlinClassMetadata.Class.isDataClass(): Boolean {
     return Flag.Class.IS_DATA(this.toKmClass().flags)
